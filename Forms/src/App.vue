@@ -18,7 +18,8 @@
                       type="text"
                       id="username"
                       class="form-control"
-                      v-model="userData.username"
+                      :value="userData.username"
+                      @input="userData.username = $event.target.value"
                     />
                   </div>
                   <div class="form-group">
@@ -58,32 +59,41 @@
               <div class="row">
                 <div class="col-md-12 form-group">
                   <label>
-                    <input type="radio" value="erkek" /> Erkek
+                    <input type="radio" value="erkek" v-model="userData.gender" /> Erkek
                   </label>
                   <label>
-                    <input type="radio" value="kadin" /> Kadın
+                    <input type="radio" value="kadin" v-model="userData.gender" /> Kadın
                   </label>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-12 from-group">
                   <label>Şehir</label>
-                  <select class="form-control">
-                    <option></option>
+                  <select v-model="userData.selectedCity" class="form-control">
+                    <option
+                      v-for="city in userData.cities"
+                      :key="city"
+                      :selected="city == 'Antalya'"
+                    >{{city}}</option>
                   </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 from-group">
+                  <XSwitch v-model="switched"></XSwitch>
                 </div>
               </div>
               <hr />
               <div class="row">
                 <div class="col-md-12">
-                  <button class="btn btn-primary">Gönder!</button>
+                  <button class="btn btn-primary" @click.prevent="submit">Gönder!</button>
                 </div>
               </div>
             </form>
           </div>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" v-if="isSubmitted">
         <div class="panel panel-info">
           <div class="panel-heading">
             <h4>Form Verileri</h4>
@@ -97,11 +107,11 @@
               <strong>İlgi Alanları</strong>
             </p>
             <ul>
-              <li v-for="item in userData.interests">{{item}}</li>
+              <li v-for="item in userData.interests" :key="item">{{item}}</li>
             </ul>
-            <p>Cinsiyet:</p>
-            <p>Şehir:</p>
-            <p>Toggle:</p>
+            <p>Cinsiyet: {{userData.gender}}</p>
+            <p>Şehir: {{userData.selectedCity}}</p>
+            <p>Toggle: {{switched}}</p>
           </div>
         </div>
       </div>
@@ -110,7 +120,9 @@
 </template>
 
 <script>
+import Switch from "./Switch";
 export default {
+  components: { XSwitch: Switch },
   data() {
     return {
       userData: {
@@ -118,9 +130,19 @@ export default {
         password: "",
         age: null,
         message: "",
-        interests: []
-      }
+        interests: [],
+        gender: "",
+        cities: ["Malatya", "Antalya", "İzmir", "İstanbul"],
+        selectedCity: ""
+      },
+      switched: "",
+      isSubmitted: false
     };
+  },
+  methods: {
+    submit() {
+      this.isSubmitted = true;
+    }
   }
 };
 </script>
